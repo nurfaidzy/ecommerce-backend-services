@@ -9,51 +9,16 @@ import {
   ValidationPipe,
   UsePipes,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CategoryServiceService } from './category-service.service';
 import { CreateCategoryDto, UpdateCategoryDto } from '../../../libs/dto';
+import {
+  ResponseHelper,
+  ApiResponse as ApiResponseType,
+} from '../../../libs/common';
+import { CategorySwaggerDecorators } from '../../../libs/common/swagger/category.swagger';
 
-interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-  meta?: {
-    timestamp: string;
-    version: string;
-  };
-}
-
-class ResponseHelper {
-  static success<T>(
-    data: T,
-    message: string = 'Operation successful',
-  ): ApiResponse<T> {
-    return {
-      success: true,
-      message,
-      data,
-      meta: {
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-      },
-    };
-  }
-
-  static successList<T>(
-    data: T[],
-    message: string = 'Data retrieved successfully',
-  ): ApiResponse<T[]> {
-    return {
-      success: true,
-      message,
-      data,
-      meta: {
-        timestamp: new Date().toISOString(),
-        version: '1.0.0',
-      },
-    };
-  }
-}
-
+@ApiTags('Categories')
 @Controller('categories')
 @UsePipes(new ValidationPipe({ transform: true }))
 export class CategoryServiceController {
@@ -61,52 +26,61 @@ export class CategoryServiceController {
     private readonly categoryServiceService: CategoryServiceService,
   ) {}
 
+  @CategorySwaggerDecorators.Create()
   @Post()
-  async create(@Body() createCategoryDto: CreateCategoryDto) {
+  async create(
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<ApiResponseType<any>> {
     const category =
       await this.categoryServiceService.create(createCategoryDto);
-    return ResponseHelper.success(category, 'Category created successfully');
+    return ResponseHelper.success('Category created successfully', category);
   }
 
+  @CategorySwaggerDecorators.FindAll()
   @Get()
-  async findAll() {
+  async findAll(): Promise<ApiResponseType<any[]>> {
     const categories = await this.categoryServiceService.findAll();
-    return ResponseHelper.successList(
-      categories,
+    return ResponseHelper.success(
       'Categories retrieved successfully',
+      categories,
     );
   }
 
+  @CategorySwaggerDecorators.FindBySlug()
   @Get('slug/:slug')
-  async findBySlug(@Param('slug') slug: string) {
+  async findBySlug(@Param('slug') slug: string): Promise<ApiResponseType<any>> {
     const category = await this.categoryServiceService.findBySlug(slug);
-    return ResponseHelper.success(category, 'Category found successfully');
+    return ResponseHelper.success('Category found successfully', category);
   }
 
+  @CategorySwaggerDecorators.FindOne()
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<ApiResponseType<any>> {
     const category = await this.categoryServiceService.findOne(id);
-    return ResponseHelper.success(category, 'Category found successfully');
+    return ResponseHelper.success('Category found successfully', category);
   }
 
+  @CategorySwaggerDecorators.Update()
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
+  ): Promise<ApiResponseType<any>> {
     const category = await this.categoryServiceService.update(
       id,
       updateCategoryDto,
     );
-    return ResponseHelper.success(category, 'Category updated successfully');
+    return ResponseHelper.success('Category updated successfully', category);
   }
 
+  @CategorySwaggerDecorators.Delete()
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<ApiResponseType<null>> {
     await this.categoryServiceService.remove(id);
-    return ResponseHelper.success(null, 'Category deleted successfully');
+    return ResponseHelper.success('Category deleted successfully');
   }
 
+  @CategorySwaggerDecorators.HealthCheck()
   @Get('health/check')
   getHello(): string {
     return this.categoryServiceService.getHello();
