@@ -1,98 +1,94 @@
 # Ecommerce Backend Services
 
-## 🚀 **ATLAS Implementation - Phase 1 Complete**
+> **Enterprise-Grade Microservices Backend for Modern E-commerce**
 
-A professional **NestJS microservices** ecommerce backend with shared PostgreSQL database, demonstrating clean architecture principles and modern TypeScript development.
-
-**Status**: ✅ Core services implemented and ready for database connection
+A robust, modular backend system built with **NestJS** and **TypeScript**, following clean architecture and microservices best practices. This project provides a scalable foundation for e-commerce platforms, featuring a shared PostgreSQL database, reusable libraries, and professional code quality standards.
 
 ---
 
-## 📋 **Quick Start**
+## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 12+
-- npm or yarn
+- Node.js v22+
+- PostgreSQL 16+
+- npm (or yarn)
 
 ### Installation & Setup
 ```bash
-# Clone and install dependencies
+# Install dependencies
 npm install
 
-# Set up environment
+# Copy and configure environment variables
 cp .env.example .env
 # Edit .env with your PostgreSQL credentials
 
 # Build the project
 npm run build
 
-# 🚀 Start all services (EASIEST)
+# Start all services (API Gateway + Microservices)
 npm run all
 
-# OR start just the API Gateway (if DB not configured)
+# Or, to start only the API Gateway (no DB required)
 npm run dev
 ```
 
-> **Note**: The API Gateway can run without database config, but microservices need PostgreSQL credentials in `.env`
+> **Note:** Microservices require a valid PostgreSQL connection in `.env`. The API Gateway can run standalone for development.
 
 ---
 
-## 🏗️ **Architecture Overview**
+## 🏗️ Architecture Overview
 
-### Microservices Structure
+### Project Structure
 ```
 /apps
-  /ecommerce-backend-services  # API Gateway
-  /category-service            # Category CRUD operations  
-  /item-service               # Item/Product CRUD operations
+  ecommerce-backend-services/   # API Gateway
+  category-service/             # Category CRUD microservice
+  item-service/                 # Item/Product CRUD microservice
 /libs
-  /common/entities           # Shared TypeORM entities
-  /common/utils             # Slug generation utilities
-  /dto                      # Validation DTOs
+  common/                      # Shared entities, utils, response wrappers
+  dto/                         # Shared DTOs for validation
 ```
 
 ### Database Schema
-- **Categories**: `id, name, slug, created_at, updated_at`
-- **Items**: `id, name, slug, description, price, category_id, created_at, updated_at`
-- **Relationships**: Category → Items (One-to-Many)
+- **Categories**: `id`, `name`, `slug`, `created_at`, `updated_at`
+- **Items**: `id`, `name`, `slug`, `description`, `price`, `category_id`, `created_at`, `updated_at`
+- **Relationships**: One-to-Many (Category → Items)
 
 ---
 
-## � **Quick Start Commands**
+## 🛠️ Commands & Service Endpoints
 
-| Command | Description | What it runs |
-|---------|-------------|--------------|
-| `npm run all` | **🔥 SIMPLEST** - Start everything | API Gateway + All Microservices |
-| `npm run services` | Start only microservices | Category + Item services |
-| `npm run dev` | Start just API Gateway | Main HTTP server only |
+### Common Commands
+| Command            | Description                        |
+|--------------------|------------------------------------|
+| `npm run all`      | Start API Gateway + all microservices |
+| `npm run services` | Start only category & item services |
+| `npm run dev`      | Start API Gateway only             |
+| `npm run build`    | Build the project                  |
+| `npm run test`     | Run unit tests                     |
+| `npm run test:e2e` | Run end-to-end tests               |
 
-### Available Services After Running
-
-- **API Gateway**: http://localhost:3000 *(Routes all requests to microservices)*
+### Service URLs (Default)
+- **API Gateway**: http://localhost:3000
 - **Category Service**: http://localhost:3001
 - **Item Service**: http://localhost:3002
 
----
-
-## �🔧 **API Endpoints**
-
-### Categories Service
+### Category Service Endpoints
 ```http
 GET    /categories              # List all categories
 POST   /categories              # Create new category
-GET    /categories/:id          # Get category by ID  
+GET    /categories/:id          # Get category by ID
 GET    /categories/slug/:slug   # Get category by slug
 PATCH  /categories/:id          # Update category
 DELETE /categories/:id          # Delete category
 ```
 
-### Items Service
+### Item Service Endpoints
 ```http
 GET    /items                     # List all items
 POST   /items                     # Create new item
 GET    /items/:id                 # Get item by ID
-GET    /items/slug/:slug          # Get item by slug  
+GET    /items/slug/:slug          # Get item by slug
 GET    /items/category/:categoryId # Get items by category
 PATCH  /items/:id                 # Update item
 DELETE /items/:id                 # Delete item
@@ -100,118 +96,96 @@ DELETE /items/:id                 # Delete item
 
 ---
 
-## ✨ **Key Features Implemented**
-
-- ✅ **SEO-Friendly URLs**: Automatic slug generation for categories and items
-- ✅ **Data Validation**: Comprehensive input validation with class-validator
-- ✅ **Error Handling**: Proper HTTP status codes and error messages
-- ✅ **TypeORM Integration**: Professional database ORM with relationships
-- ✅ **Shared Libraries**: Reusable entities, DTOs, and utilities
-- ✅ **Code Quality**: ESLint + Prettier enforced formatting
-
----
-
-## 📖 **Documentation**
-
-- 📝 [Development Activity Log](./docs/development-activity-log.md)
-- 📋 [Implementation Summary](./docs/implementation-summary.md) 
-- 🎯 [Phase 1 Project Plan](./docs/phase1-initial%20project.md)
+## ✨ Features
+- **SEO-Friendly URLs**: Automatic slug generation for categories and items
+- **Robust Validation**: DTOs with class-validator for safe, clean data
+- **Consistent Error Handling**: Professional HTTP status codes and error messages
+- **TypeORM Integration**: Modern ORM with entity relationships
+- **Reusable Libraries**: Shared entities, DTOs, and utilities for DRY code
+- **Code Quality**: Enforced with ESLint and Prettier
+- **Testing**: Unit and e2e tests with Jest
 
 ---
 
-## 🔧 **Development Commands**
+## 📚 Documentation
+- [Development Activity Log](./docs/development-activity-log.md)
+- [Implementation Summary](./docs/implementation-summary.md)
+- [Phase 1 Project Plan](./docs/phase1-initial%20project.md)
+
+---
+
+## 🧑‍💻 Development & Testing
 
 ```bash
-# Development
-npm run start:dev         # Start in watch mode
-npm run start:debug       # Start with debug mode
+# Development (watch mode)
+npm run start:dev
 
-# Building
-npm run build            # Build the project
-npm run start:prod       # Run production build
+# Debug mode
+npm run start:debug
 
-# Code Quality  
-npm run format           # Format code with Prettier
-npm run lint             # Run ESLint
-npm run lint:fix         # Fix ESLint issues
+# Build for production
+npm run build
+npm run start:prod
+
+# Code formatting & linting
+npm run format
+npm run lint
+npm run lint:fix
 
 # Testing
-npm run test             # Run unit tests
-npm run test:watch       # Run tests in watch mode
-npm run test:cov         # Run tests with coverage
-npm run test:e2e         # Run end-to-end tests
+npm run test         # Unit tests
+npm run test:watch   # Watch mode
+npm run test:cov     # Coverage
+npm run test:e2e     # End-to-end tests
 ```
 
 ---
 
-## 🏛️ **Tech Stack**
-
-- **Framework**: NestJS (Node.js)
-- **Language**: TypeScript
-- **Database**: PostgreSQL + TypeORM
-- **Validation**: class-validator + class-transformer
-- **Code Quality**: ESLint + Prettier
-- **Testing**: Jest
-
----
-
-## 📈 **Next Steps**
-
-1. **Database Setup**: Create PostgreSQL database and test connections
-2. **API Gateway**: Implement service routing in main gateway
-3. **Frontend Integration**: Connect with Next.js frontend
-4. **Testing**: Add comprehensive unit and integration tests
+## 🏛️ Tech Stack
+- **Framework:** NestJS (Node.js)
+- **Language:** TypeScript
+- **Database:** PostgreSQL + TypeORM
+- **Validation:** class-validator, class-transformer
+- **Testing:** Jest
+- **Code Quality:** ESLint, Prettier
 
 ---
 
-**Developed by ATLAS** - Demonstrating enterprise-grade backend architecture and clean code principles.
+## 🚦 Next Steps
+1. **Database Setup:** Create and connect PostgreSQL instance
+2. **API Gateway:** Expand service routing and authentication
+3. **Frontend Integration:** Connect with a Next.js or other frontend
+4. **Testing:** Expand unit and integration test coverage
+
+---
+
+## 🚀 Deployment
+
+For production deployment, see the [NestJS deployment guide](https://docs.nestjs.com/deployment).
+
+You can also deploy to AWS using [NestJS Mau](https://mau.nestjs.com):
+```bash
+npm install -g @nestjs/mau
+mau deploy
+```
+
+---
+
+## 🔗 Resources
+- [NestJS Documentation](https://docs.nestjs.com)
+- [NestJS Discord](https://discord.gg/G7Qnnhy)
+- [NestJS Courses](https://courses.nestjs.com/)
+- [NestJS Devtools](https://devtools.nestjs.com)
+- [Jobs Board](https://jobs.nestjs.com)
+
+---
+
+## 🤝 Contributing & Support
+
+This project is MIT-licensed and welcomes contributions! For support, see the [NestJS support page](https://docs.nestjs.com/support).
+
+---
+
+**Developed by ATLAS** — Demonstrating enterprise-grade backend architecture and clean code principles.
 
 *Like Atlas bearing the heavens, this system carries the structured knowledge of modern microservices development.*
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
