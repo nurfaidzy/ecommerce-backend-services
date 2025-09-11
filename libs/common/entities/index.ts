@@ -1,2 +1,3 @@
-export { Category } from './category.entity';
-export { Item } from './item.entity';
+export * from './category.entity';
+export * from './item.entity';
+export * from './user.entity';
