@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Category, Item } from '../../../libs/common/entities';
+import { Category, Item, User } from '../../../libs/common/entities';
 import { CategoriesGatewayModule } from './modules/categories/categories-gateway.module';
 import { ItemsGatewayModule } from './modules/items/items-gateway.module';
+import { AuthGatewayModule } from './modules/auth/auth-gateway.module';
 
 @Module({
   imports: [
@@ -19,12 +20,13 @@ import { ItemsGatewayModule } from './modules/items/items-gateway.module';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'password',
       database: process.env.DB_NAME || 'ecommerce_db',
-      entities: [Category, Item],
+      entities: [Category, Item, User],
       synchronize: process.env.NODE_ENV !== 'production', // Only for development
       logging: process.env.NODE_ENV === 'development',
     }),
     CategoriesGatewayModule,
     ItemsGatewayModule,
+    AuthGatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService],
