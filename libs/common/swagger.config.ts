@@ -19,10 +19,11 @@ export class SwaggerConfigService {
       .setDescription(config.description)
       .setVersion(config.version)
       .addTag(config.tag || 'API')
-      .addBearerAuth() // For future authentication
+      .addBearerAuth() // For authentication
       .addServer('http://localhost:4000', 'API Gateway (Development)')
       .addServer('http://localhost:4001', 'Category Service (Development)')
       .addServer('http://localhost:4002', 'Item Service (Development)')
+      .addServer('http://localhost:4003', 'Auth Service (Development)')
       .setContact(
         'E-commerce Backend Team',
         'https://github.com/your-org/ecommerce-backend',
@@ -58,6 +59,7 @@ export class SwaggerConfigService {
     return {
       CATEGORIES: 'Categories',
       ITEMS: 'Items',
+      AUTH: 'Authentication',
       HEALTH: 'Health',
       API_GATEWAY: 'API Gateway',
     };

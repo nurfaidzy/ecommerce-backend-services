@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AuthServiceModule } from './auth-service.module';
+import { SwaggerConfigService } from '../../../libs/common/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthServiceModule);
@@ -23,19 +23,37 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger documentation
-  const config = new DocumentBuilder()
-    .setTitle('Auth Service API')
-    .setDescription(
-      'Authentication and authorization service for ecommerce platform',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addServer('http://localhost:4003', 'Development server')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  // Setup Swagger Documentation
+  SwaggerConfigService.setupSwagger(app, {
+    title: 'Authentication Service API',
+    description: `
+      Authentication and Authorization Microservice
+      
+      ## Features
+      - User registration and login
+      - JWT-based authentication with refresh tokens
+      - Role-based access control (RBAC)
+      - Redis-based token management
+      - Secure password hashing with bcrypt
+      - Session management and logout
+      
+      ## Security
+      - Access tokens: 1 hour expiry
+      - Refresh tokens: 7 days expiry (stored in Redis)
+      - Password requirements: minimum 8 characters
+      - Automatic token rotation on refresh
+      - Complete session invalidation on logout
+      
+      ## Usage
+      1. Register or login to get tokens
+      2. Use access token in Authorization header: Bearer <token>
+      3. Refresh tokens before expiry
+      4. Logout to invalidate all sessions
+    `,
+    version: '1.0.0',
+    tag: 'Authentication',
+    path: '/api-docs',
+  });
 
   const port = process.env.AUTH_SERVICE_PORT || 4003;
   await app.listen(port);
