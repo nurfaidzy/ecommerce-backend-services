@@ -7,6 +7,7 @@ import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RedisService } from './redis.service';
 import { User, Category, Item } from '../../../libs/common/entities';
 
 @Module({
@@ -44,7 +45,7 @@ import { User, Category, Item } from '../../../libs/common/entities';
     }),
   ],
   controllers: [AuthServiceController],
-  providers: [AuthServiceService, JwtAuthGuard, JwtStrategy],
-  exports: [AuthServiceService, JwtAuthGuard],
+  providers: [AuthServiceService, JwtAuthGuard, JwtStrategy, RedisService],
+  exports: [AuthServiceService, JwtAuthGuard, RedisService],
 })
 export class AuthServiceModule {}

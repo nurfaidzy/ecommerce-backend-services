@@ -141,10 +141,8 @@ export class AuthServiceController {
     status: 401,
     description: 'Unauthorized - invalid token',
   })
-  async logout(
-    @Request() req: AuthenticatedRequest,
-  ): Promise<ApiResponseType<null>> {
-    await this.authService.logout(req.user.id);
+  logout(@Request() req: AuthenticatedRequest): ApiResponseType<null> {
+    this.authService.logout(req.user.id);
     return ResponseHelper.success('Logged out successfully', null);
   }
 }

@@ -16,13 +16,18 @@ import {
   UserProfileDto,
 } from '../../../libs/dto/auth.dto';
 import { JwtPayload } from './interfaces/auth.interfaces';
+import { RedisService } from './redis.service';
 
 @Injectable()
 export class AuthServiceService {
+  private readonly REFRESH_TOKEN_PREFIX = 'refresh_token:';
+  private readonly REFRESH_TOKEN_TTL = 604800; // 7 days in seconds
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
@@ -55,7 +60,7 @@ export class AuthServiceService {
     const tokens = this.generateTokens(savedUser);
 
     // Store refresh token in Redis (placeholder - you'll implement this)
-    this.storeRefreshToken(savedUser.id, tokens.refreshToken);
+    void this.storeRefreshToken(savedUser.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -83,7 +88,7 @@ export class AuthServiceService {
     const tokens = this.generateTokens(user);
 
     // Store refresh token in Redis (placeholder - you'll implement this)
-    this.storeRefreshToken(user.id, tokens.refreshToken);
+    void this.storeRefreshToken(user.id, tokens.refreshToken);
 
     return tokens;
   }
@@ -93,8 +98,11 @@ export class AuthServiceService {
       // Verify refresh token with proper typing
       const payload: JwtPayload = this.jwtService.verify(refreshToken);
 
-      // Check if token exists in Redis (placeholder - you'll implement this)
-      const isValidToken = this.validateRefreshToken(payload.sub, refreshToken);
+      // Check if token exists in Redis
+      const isValidToken = await this.validateRefreshToken(
+        payload.sub,
+        refreshToken,
+      );
 
       if (!isValidToken) {
         throw new UnauthorizedException('Invalid refresh token');
@@ -113,8 +121,8 @@ export class AuthServiceService {
       const tokens = this.generateTokens(user);
 
       // Store new refresh token and invalidate old one
-      this.storeRefreshToken(user.id, tokens.refreshToken);
-      this.invalidateRefreshToken(user.id, refreshToken);
+      await this.storeRefreshToken(user.id, tokens.refreshToken);
+      await this.invalidateRefreshToken(user.id);
 
       return tokens;
     } catch {
@@ -142,9 +150,9 @@ export class AuthServiceService {
     };
   }
 
-  logout(userId: string): void {
+  async logout(userId: string): Promise<void> {
     // Invalidate all refresh tokens for the user in Redis
-    this.invalidateAllRefreshTokens(userId);
+    await this.invalidateAllRefreshTokens(userId);
   }
 
   private generateTokens(user: User): AuthResponseDto {
@@ -166,31 +174,34 @@ export class AuthServiceService {
   }
 
   // Redis operations (placeholders - you'll implement these)
-  private storeRefreshToken(userId: string, refreshToken: string): void {
-    // TODO: Store refresh token in Redis with expiration
-    // Example: await this.redisService.setex(`refresh_token:${userId}`, 604800, refreshToken);
-    console.log(`Storing refresh token for user ${userId}: ${refreshToken}`);
-  }
-
-  private validateRefreshToken(userId: string, refreshToken: string): boolean {
-    // TODO: Validate refresh token exists in Redis
-    // Example: const storedToken = await this.redisService.get(`refresh_token:${userId}`);
-    // return storedToken === refreshToken;
-    console.log(`Validating refresh token for user ${userId}: ${refreshToken}`);
-    return true; // Temporary - always return true for now
-  }
-
-  private invalidateRefreshToken(userId: string, refreshToken: string): void {
-    // TODO: Remove specific refresh token from Redis
-    // Example: await this.redisService.del(`refresh_token:${userId}`);
-    console.log(
-      `Invalidating refresh token for user ${userId}: ${refreshToken}`,
+  private async storeRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<void> {
+    const key = `${this.REFRESH_TOKEN_PREFIX}${userId}`;
+    await this.redisService.setWithExpiry(
+      key,
+      refreshToken,
+      this.REFRESH_TOKEN_TTL,
     );
   }
 
-  private invalidateAllRefreshTokens(userId: string): void {
-    // TODO: Remove all refresh tokens for user from Redis
-    // Example: await this.redisService.del(`refresh_token:${userId}`);
-    console.log(`Invalidating all refresh tokens for user ${userId}`);
+  private async validateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<boolean> {
+    const key = `${this.REFRESH_TOKEN_PREFIX}${userId}`;
+    const storedToken = await this.redisService.get(key);
+    return storedToken === refreshToken;
+  }
+
+  private async invalidateRefreshToken(userId: string): Promise<void> {
+    const key = `${this.REFRESH_TOKEN_PREFIX}${userId}`;
+    await this.redisService.delete(key);
+  }
+
+  private async invalidateAllRefreshTokens(userId: string): Promise<void> {
+    const pattern = `${this.REFRESH_TOKEN_PREFIX}${userId}*`;
+    await this.redisService.deletePattern(pattern);
   }
 }
