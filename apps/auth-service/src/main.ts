@@ -57,10 +57,5 @@ async function bootstrap() {
 
   const port = process.env.AUTH_SERVICE_PORT || 4003;
   await app.listen(port);
-
-  console.log(`🚀 Auth Service is running on: http://localhost:${port}`);
-  console.log(
-    `📖 Swagger docs available at: http://localhost:${port}/api/docs`,
-  );
 }
 void bootstrap();
