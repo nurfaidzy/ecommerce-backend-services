@@ -30,6 +30,9 @@ async function bootstrap() {
       ## Features
       - Category Management
       - Item Management
+      - User Authentication & Authorization
+      - JWT Token Management
+      - Role-based Access Control
       - Standardized API Responses
       - Input Validation
       - Error Handling
@@ -38,6 +41,7 @@ async function bootstrap() {
       This API Gateway routes requests to the following microservices:
       - Category Service (Port 4001)
       - Item Service (Port 4002)
+      - Authentication Service (Port 4003)
     `,
     version: '1.0.0',
     tag: 'E-commerce API',
@@ -46,7 +50,7 @@ async function bootstrap() {
 
   const port = process.env.API_GATEWAY_PORT ?? 4000;
   await app.listen(port);
-  
+
   console.log(`🚀 API Gateway running on: http://localhost:${port}`);
   console.log(`📚 Swagger Documentation: http://localhost:${port}/api-docs`);
 }
